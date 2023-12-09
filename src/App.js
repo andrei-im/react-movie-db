@@ -16,6 +16,8 @@ const App = () => {
     const [movies, setMovies] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [genres, setGenres] = useState([]);
+    const [selectedGenre, setSelectedGenre] = useState('');
+    const [filteredMovies, setFilteredMovies] = useState([]);
 
     const slickSettings = {
         dots: false,
@@ -30,6 +32,12 @@ const App = () => {
         const response = await fetch(`${API_URL}/search/movie?query=${cleanTitle}&api_key=${API_KEY}`);
         const data = await response.json();
 
+        setMovies(data.results);
+    }
+
+    const searchGenre = async (genre) => {
+        const response = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genre}`);
+        const data = await response.json();
         setMovies(data.results);
     }
 
@@ -61,6 +69,19 @@ const App = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const filterMovies = () => {
+            if (selectedGenre && searchTerm !== '') {
+                const filtered = movies.filter(movie => movie.genre_ids.includes(parseInt(selectedGenre)));
+                setFilteredMovies(filtered);
+            } else {
+                setFilteredMovies(movies);
+            }
+        };
+    
+        filterMovies();
+    }, [movies, selectedGenre]);
+
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
             searchMovies(searchTerm);
@@ -71,10 +92,22 @@ const App = () => {
         fetchPopularMovies();
     };
 
+    const handleGenreChange = (event) => {
+        const fetchData = async () => {
+            await setSelectedGenre(event.target.value)
+        };
+    
+        fetchData();
+
+        if (searchTerm === '') {
+            searchGenre(event.target.value);
+        }
+    }
+
     return (
         <div className="app">
             <h1 style={{ cursor: 'pointer' }} onClick={handleTitleClick}>MovieDB</h1>
-
+            
             <div className="search">
                 <input
                     placeholder='Search for movies'
@@ -89,14 +122,22 @@ const App = () => {
                 />
             </div>
 
+            <div className="selectGenre">
+                <select value={selectedGenre} onChange={handleGenreChange}>
+                        <option value="">All Genres</option>
+                        {Object.entries(genres).map(([id, name]) => (
+                            <option key={id} value={id}>{name}</option>
+                        ))}
+                </select>
+            </div>
+
             <div className="container">
             <Slider {...slickSettings}>
-            {movies?.length > 0
+            {filteredMovies?.length > 0
                 ? (
-                            movies.map((movie) => (
+                    filteredMovies.map((movie) => (
                                 <div key={movie.id}>
                                     <MovieCard
-                                    // key={movie.id}
                                     movie={movie}
                                     genres={genres}
                                     />

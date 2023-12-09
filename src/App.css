@@ -225,6 +225,23 @@ h1 {
   margin: 0 auto; /* Center the slider */
 }
 
+.selectGenre select {
+  margin-left: 1rem;
+  border: none;
+  font-size: 1.2rem;
+  font-family: var(--font-raleway);
+  font-weight: 500;
+  padding: 0.5rem;
+  outline: none;
+  color: #a1a1a1;
+  background: #1f2123;
+  border-radius: 3px;
+}
+
+.selectGenre select:hover,
+.selectGenre select:focus {
+  border: 1px solid #f9d3b4;
+}
 
 
 
