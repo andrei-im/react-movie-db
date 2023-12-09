@@ -6,23 +6,39 @@ import './App.css';
 import SearchIcon from './search.svg';
 
 
-const API_URL = 'http://www.omdbapi.com?apikey=6c1b602b';
+const API_KEY = '1c8bc09bba68241cd0bcbe7a142dda0f'
+const API_URL = 'https://api.themoviedb.org/3/search/movie';
+
 
 
 const App = () => {
     const [movies, setMovies] = useState([]);
     const [searchTerm, setSearchTerm] = useState();
+    const [genres, setGenres] = useState([]);
 
     const searchMovies = async (title) => {
-        const cleanTitle = DOMPurify.sanitize(title)
-        const response = await fetch(`${API_URL}&s=${cleanTitle}`);
+        const cleanTitle = DOMPurify.sanitize(title);
+        const response = await fetch(`${API_URL}?query=${cleanTitle}&api_key=${API_KEY}`);
         const data = await response.json();
 
-        setMovies(data.Search)
+        setMovies(data.results);
     }
 
+    const fetchGenres = async () => {
+        const response = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`);
+        const data = await response.json();
+
+        const genresMap = {};
+        data.genres.forEach((genre) => {
+            genresMap[genre.id] = genre.name;
+        });
+
+        setGenres(genresMap);
+    } 
+
     useEffect(() => {
-        searchMovies('Batman')
+        searchMovies('Batman');
+        fetchGenres();
     }, []);
 
     const handleKeyDown = (e) => {
@@ -53,7 +69,11 @@ const App = () => {
                 ? (
                     <div className="container">
                     {movies.map((movie) => (
-                            <MovieCard movie={movie}/>
+                            <MovieCard
+                            key={movie.id}
+                            movie={movie}
+                            genres={genres}
+                            />
                         ))}
                     </div>
                 ) : (
