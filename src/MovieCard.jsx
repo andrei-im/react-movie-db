@@ -21,7 +21,7 @@ const MovieCard = ({ movie, genres }) => {
             </div>
 
             <div>
-                <img src={movie.poster_path != 'N/A' ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : 'https://via.placeholder.com/400'} alt={movie.Title}></img>
+                <img src={movie.poster_path != null ? 'https://image.tmdb.org/t/p/w500/' + movie.poster_path : 'https://via.placeholder.com/400'} alt={movie.Title}></img>
             </div>
 
             <div>

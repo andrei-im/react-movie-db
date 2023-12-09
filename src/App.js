@@ -1,31 +1,29 @@
 import {React, useEffect, useState} from 'react';
 import MovieCard from './MovieCard';
 import DOMPurify from 'dompurify';
-
 import './App.css';
 import SearchIcon from './search.svg';
 
 
 const API_KEY = '1c8bc09bba68241cd0bcbe7a142dda0f'
-const API_URL = 'https://api.themoviedb.org/3/search/movie';
-
+const API_URL = 'https://api.themoviedb.org/3';
 
 
 const App = () => {
     const [movies, setMovies] = useState([]);
-    const [searchTerm, setSearchTerm] = useState();
+    const [searchTerm, setSearchTerm] = useState('');
     const [genres, setGenres] = useState([]);
 
     const searchMovies = async (title) => {
         const cleanTitle = DOMPurify.sanitize(title);
-        const response = await fetch(`${API_URL}?query=${cleanTitle}&api_key=${API_KEY}`);
+        const response = await fetch(`${API_URL}/search/movie?query=${cleanTitle}&api_key=${API_KEY}`);
         const data = await response.json();
 
         setMovies(data.results);
     }
 
     const fetchGenres = async () => {
-        const response = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`);
+        const response = await fetch(`${API_URL}/genre/movie/list?api_key=${API_KEY}`);
         const data = await response.json();
 
         const genresMap = {};
@@ -34,11 +32,22 @@ const App = () => {
         });
 
         setGenres(genresMap);
-    } 
+    }
+
+    const fetchPopularMovies = async () => {
+        const response = await fetch(`${API_URL}/movie/popular?api_key=${API_KEY}`);
+        const data = await response.json();
+
+        setMovies(data.results);
+    }
 
     useEffect(() => {
-        searchMovies('Batman');
-        fetchGenres();
+        const fetchData = async () => {
+            await fetchGenres();
+            await fetchPopularMovies();
+        };
+    
+        fetchData();
     }, []);
 
     const handleKeyDown = (e) => {
@@ -47,9 +56,13 @@ const App = () => {
         }
     }
 
+    const handleTitleClick = () => {
+        fetchPopularMovies();
+    };
+
     return (
         <div className="app">
-            <h1>MovieDB</h1>
+            <h1 style={{ cursor: 'pointer' }} onClick={handleTitleClick}>MovieDB</h1>
 
             <div className="search">
                 <input
