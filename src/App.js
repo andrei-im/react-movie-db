@@ -1,5 +1,6 @@
 import {React, useEffect, useState} from 'react';
 import MovieCard from './MovieCard';
+import DOMPurify from 'dompurify';
 
 import './App.css';
 import SearchIcon from './search.svg';
@@ -13,7 +14,8 @@ const App = () => {
     const [searchTerm, setSearchTerm] = useState();
 
     const searchMovies = async (title) => {
-        const response = await fetch(`${API_URL}&s=${title}`);
+        const cleanTitle = DOMPurify.sanitize(title)
+        const response = await fetch(`${API_URL}&s=${cleanTitle}`);
         const data = await response.json();
 
         setMovies(data.Search)
