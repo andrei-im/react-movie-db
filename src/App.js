@@ -1,8 +1,11 @@
 import {React, useEffect, useState} from 'react';
+import Slider from 'react-slick';
 import MovieCard from './MovieCard';
 import DOMPurify from 'dompurify';
-import './App.css';
 import SearchIcon from './search.svg';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+import './App.css';
 
 
 const API_KEY = '1c8bc09bba68241cd0bcbe7a142dda0f'
@@ -13,6 +16,14 @@ const App = () => {
     const [movies, setMovies] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [genres, setGenres] = useState([]);
+
+    const slickSettings = {
+        dots: false,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 3,
+        slidesToScroll: 1
+      };
 
     const searchMovies = async (title) => {
         const cleanTitle = DOMPurify.sanitize(title);
@@ -78,22 +89,28 @@ const App = () => {
                 />
             </div>
 
+            <div className="container">
+            <Slider {...slickSettings}>
             {movies?.length > 0
                 ? (
-                    <div className="container">
-                    {movies.map((movie) => (
-                            <MovieCard
-                            key={movie.id}
-                            movie={movie}
-                            genres={genres}
-                            />
-                        ))}
-                    </div>
+                            movies.map((movie) => (
+                                <div key={movie.id}>
+                                    <MovieCard
+                                    // key={movie.id}
+                                    movie={movie}
+                                    genres={genres}
+                                    />
+                                    </div>
+                                ))
+                        
+                    
                 ) : (
                     <div className="empty">
                         <h2>No movies found</h2>
                     </div>
                 )}
+                </Slider>
+                </div>
 
             
         </div>

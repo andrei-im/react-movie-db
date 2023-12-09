@@ -215,3 +215,17 @@ h1 {
     margin: 1rem;
   }
 }
+
+.slide {
+  padding: 0 10px;
+}
+
+.slick-slider {
+  width: 80%; /* Adjust the width as needed */
+  margin: 0 auto; /* Center the slider */
+}
+
+
+
+
+
